@@ -1,6 +1,7 @@
 <div align="center">
+  <img src="images/pcfdt.png" alt="PUMP.CFD" width="200"/>
   <h1>PUMP.CFD</h1>
-  <p>Decentralized PumpFun Leverage Trading Platform</p>
+  <p>Decentralized PumpFun Trading Platform</p>
 </div>
 
 Experience lightning-fast decentralized trading on Solana with up to 5x leverage. Trade your favorite crypto pairs with minimal slippage and competitive fees.

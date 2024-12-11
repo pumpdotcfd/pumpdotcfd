@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHILLGUY Trading - Solana Memecoin CFDs</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="backdrop"></div>
+    <header class="header">
+        <div class="logo">
+            <img src="../images/pcfdt.png" alt="Logo">
+            <span class="site-name">pump.cfd</span>
+        </div>
+        <button class="connect-wallet">Connect Wallet</button>
+    </header>
+
+    <div class="token-selector">
+        <div class="token-buttons">
+            <button class="token-button active" data-symbol="CHILLGUY">
+                <img src="../images/chillguy.jpg" alt="CHILLGUY">
+                <span>CHILLGUY</span>
+            </button>
+            <button class="token-button" data-symbol="GOAT">
+                <img src="../images/goat.jpg" alt="GOAT">
+                <span>GOAT</span>
+            </button>
+            <button class="token-button" data-symbol="FWOG">
+                <img src="../images/fwog.png" alt="FWOG">
+                <span>FWOG</span>
+            </button>
+            <button class="token-button" data-symbol="LUCE">
+                <img src="../images/luce.jpg" alt="LUCE">
+                <span>LUCE</span>
+            </button>
+            <div class="earn-box">
+                <span>EARN</span>
+            </div>
+        </div>
+        <div class="price-display">
+            <img src="../images/sol.png" alt="SOL">
+            <span id="sol-price">$0.00</span>
+        </div>
+    </div>
+
+    <div class="trading-container">
+        <div class="chart-section">
+            <iframe 
+                height="100%" 
+                width="100%" 
+                id="geckoterminal-embed" 
+                title="GeckoTerminal Embed" 
+                src="https://www.geckoterminal.com/solana/pools/93tjgwff5Ac5ThyMi8C4WejVVQq4tuMeMuYW1LEYZ7bu?embed=1&info=0&swaps=0&grayscale=0&light_chart=0" 
+                frameborder="0" 
+                allow="clipboard-write" 
+                allowfullscreen
+            ></iframe>
+        </div>
+        <div class="trading-panel">
+            <div class="position-type">
+                <button class="position-btn long active">Long</button>
+                <button class="position-btn short">Short</button>
+                <button class="settings-btn">
+                    <img src="../images/gear.png" alt="Settings">
+                </button>
+            </div>
+
+            <div class="input-section">
+                <label>You're Paying</label>
+                <div class="amount-input">
+                    <img src="../images/sol.png" alt="SOL" class="currency-icon">
+                    <input type="number" id="sol-amount" placeholder="0.00">
+                    <span id="usd-value" class="usd-value">$0.00</span>
+                </div>
+            </div>
+
+            <div class="size-section">
+                <label>Size of Long</label>
+                <div class="size-display">
+                    <img src="../images/chillguy.jpg" alt="CHILLGUY" class="currency-icon" id="position-token-icon">
+                    <span id="position-size">0.00000000</span>
+                </div>
+            </div>
+
+            <div class="leverage-section">
+                <label>Leverage</label>
+                <div class="leverage-control">
+                    <button class="leverage-btn minus">-</button>
+                    <span id="leverage-value">1.1x</span>
+                    <button class="leverage-btn plus">+</button>
+                </div>
+                <input type="range" class="leverage-slider" min="1.1" max="5" step="0.1" value="1.1">
+                <div class="leverage-marks">
+                    <span>1.1x</span>
+                    <span>2x</span>
+                    <span>3x</span>
+                    <span>4x</span>
+                    <span>5x</span>
+                </div>
+            </div>
+
+            <div class="position-info">
+                <div class="info-row">
+                    <span>Collateral</span>
+                    <span id="collateral-usd">0.00 USD</span>
+                </div>
+                <div class="info-row">
+                    <span>Size in USD</span>
+                    <span id="size-usd">0.00 USD</span>
+                </div>
+            </div>
+
+            <button class="action-button" id="trade-button">Long CHILLGUY</button>
+        </div>
+    </div>
+
+    <div class="trading-info">
+        <div class="info-tabs">
+            <button class="tab-button active">Positions</button>
+            <button class="tab-button">Trade History</button>
+            <button class="tab-button">Expired Orders</button>
+        </div>
+        
+        <div class="info-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Size</th>
+                        <th>Value</th>
+                        <th>Collateral</th>
+                        <th>Entry Price</th>
+                        <th>Mark Price</th>
+                        <th>Liq. Price</th>
+                        <th>Take Profit</th>
+                        <th>Stop Loss</th>
+                        <th>PnL</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be populated dynamically -->
+                    <tr class="empty-state">
+                        <td colspan="11">No positions open</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="settings-popup" style="display: none;">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="close-settings">×</button>
+        </div>
+        <div class="settings-content">
+            <div class="setting-item">
+                <label>Slippage</label>
+                <div class="slippage-options">
+                    <button class="slippage-btn">1%</button>
+                    <button class="slippage-btn active">2%</button>
+                    <button class="slippage-btn">3%</button>
+                    <button class="slippage-btn custom">Custom</button>
+                    <input type="number" class="custom-slippage" placeholder="0.00%" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label>Max Priority Fee</label>
+                <div class="fee-input">
+                    <input type="number" value="0.004" step="0.001">
+                    <span>SOL</span>
+                </div>
+            </div>
+            <button class="save-settings">Save Settings</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSolPrice = 0;
+        let lastPrice = null;
+        let currentTokenPrice = 0;
+        let selectedToken = {
+            address: 'Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump',
+            symbol: 'CHILLGUY',
+            image: '../images/chillguy.jpg'
+        };
+
+        async function fetchAndDisplaySolPrice() {
+            try {
+                const response = await fetch('https://api.kraken.com/0/public/Ticker?pair=SOLUSD');
+                const data = await response.json();
+                const price = parseFloat(data.result.SOLUSD.c[0]);
+                const priceElement = document.getElementById('sol-price');
+                
+                if (price !== lastPrice) {
+                    priceElement.textContent = `$${price.toFixed(2)}`;
+                    priceElement.parentElement.classList.add('flash');
+                    setTimeout(() => priceElement.parentElement.classList.remove('flash'), 500);
+                    lastPrice = price;
+                }
+                
+                currentSolPrice = price;
+                updateCalculations();
+            } catch (error) {
+                console.error('Error fetching SOL price:', error);
+            }
+        }
+
+        async function fetchTokenPrice(address) {
+            try {
+                const response = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${address}`);
+                const data = await response.json();
+                currentTokenPrice = parseFloat(data.data.attributes.price_usd);
+                updateCalculations();
+            } catch (error) {
+                console.error('Error fetching token price:', error);
+            }
+        }
+
+        function updateCalculations() {
+            const solAmount = parseFloat(document.getElementById('sol-amount').value) || 0;
+            const leverage = parseFloat(document.getElementById('leverage-value').textContent);
+            
+            // Calculate USD value
+            const usdValue = solAmount * currentSolPrice;
+            document.getElementById('usd-value').textContent = `$${usdValue.toFixed(2)}`;
+            
+            // Calculate position size
+            const tokenAmount = currentTokenPrice > 0 ? (usdValue / currentTokenPrice) * leverage : 0;
+            document.getElementById('position-size').textContent = tokenAmount.toFixed(8);
+
+            // Calculate trading details
+            const entryPrice = currentTokenPrice;
+            const isLong = document.querySelector('.position-btn.long').classList.contains('active');
+            
+            // Liquidation price calculation (simplified example)
+            const liquidationPrice = isLong 
+                ? entryPrice * (1 - 1/leverage) 
+                : entryPrice * (1 + 1/leverage);
+            
+            // Fee calculations
+            const openFee = usdValue * 0.0006; // 0.06%
+            const priceImpact = usdValue * 0.0001; // 0.01%
+            const borrowRate = 0.0128; // 0.0128% per hour
+            
+            // Update the position info
+            const positionInfo = `
+                <div class="info-row">
+                    <span>Entry price</span>
+                    <span class="value">$${entryPrice.toFixed(2)}</span>
+                </div>
+                <div class="info-row">
+                    <span>Liquidation price</span>
+                    <span class="value">$${liquidationPrice.toFixed(2)}</span>
+                </div>
+                <div class="info-row">
+                    <span>Open fee (0.06%)</span>
+                    <span class="value">${openFee.toFixed(4)} USD</span>
+                </div>
+                <div class="info-row">
+                    <span>Price impact (0.01%)</span>
+                    <span class="value">${priceImpact.toFixed(4)} USD</span>
+                </div>
+                <div class="info-row">
+                    <span>Borrow rate</span>
+                    <span class="value">${borrowRate}% / hr</span>
+                </div>
+                <div class="info-row">
+                    <span>Available liquidity</span>
+                    <span class="value">$100,000</span>
+                </div>
+                <div class="info-row">
+                    <span>Collateral</span>
+                    <span class="value">${usdValue.toFixed(2)} USD</span>
+                </div>
+                <div class="info-row">
+                    <span>Size in USD</span>
+                    <span class="value">${(usdValue * leverage).toFixed(2)} USD</span>
+                </div>
+            `;
+            
+            document.querySelector('.position-info').innerHTML = positionInfo;
+        }
+
+        fetchAndDisplaySolPrice();
+        setInterval(fetchAndDisplaySolPrice, 3000);
+        fetchTokenPrice(selectedToken.address);
+        setInterval(() => fetchTokenPrice(selectedToken.address), 3000);
+
+        document.getElementById('sol-amount').addEventListener('input', updateCalculations);
+
+        const leverageSlider = document.querySelector('.leverage-slider');
+        leverageSlider.addEventListener('input', () => {
+            document.getElementById('leverage-value').textContent = `${leverageSlider.value}x`;
+            updateCalculations();
+        });
+
+        document.querySelector('.leverage-btn.minus').addEventListener('click', () => {
+            leverageSlider.value = Math.max(1.1, parseFloat(leverageSlider.value) - 0.1);
+            document.getElementById('leverage-value').textContent = `${leverageSlider.value}x`;
+            updateCalculations();
+        });
+
+        document.querySelector('.leverage-btn.plus').addEventListener('click', () => {
+            leverageSlider.value = Math.min(5, parseFloat(leverageSlider.value) + 0.1);
+            document.getElementById('leverage-value').textContent = `${leverageSlider.value}x`;
+            updateCalculations();
+        });
+
+        document.querySelectorAll('.position-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.position-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const isLong = button.classList.contains('long');
+                const actionButton = document.getElementById('trade-button');
+                
+                if (isLong) {
+                    actionButton.classList.remove('short');
+                    actionButton.classList.add('long');
+                    document.querySelector('.size-section label').textContent = 'Size of Long';
+                } else {
+                    actionButton.classList.remove('long');
+                    actionButton.classList.add('short');
+                    document.querySelector('.size-section label').textContent = 'Size of Short';
+                }
+                actionButton.textContent = `${isLong ? 'Long' : 'Short'} ${selectedToken.symbol}`;
+            });
+        });
+
+        document.querySelectorAll('.token-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.token-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const tokenSymbol = button.querySelector('span').textContent;
+                const tokenImage = button.querySelector('img').src;
+                document.getElementById('position-token-icon').src = tokenImage;
+                
+                if (tokenSymbol === 'CHILLGUY') {
+                    selectedToken = {
+                        address: 'Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump',
+                        symbol: 'CHILLGUY',
+                        image: tokenImage
+                    };
+                    document.querySelector('#geckoterminal-embed').src = 'https://www.geckoterminal.com/solana/pools/93tjgwff5Ac5ThyMi8C4WejVVQq4tuMeMuYW1LEYZ7bu?embed=1&info=0&swaps=0&grayscale=0&light_chart=0';
+                } else if (tokenSymbol === 'GOAT') {
+                    selectedToken = {
+                        address: 'CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump',
+                        symbol: 'GOAT',
+                        image: tokenImage
+                    };
+                    document.querySelector('#geckoterminal-embed').src = 'https://www.geckoterminal.com/solana/pools/9Tb2ohu5P16BpBarqd3N27WnkF51Ukfs8Z1GzzLDxVZW?embed=1&info=0&swaps=0&grayscale=0&light_chart=0';
+                } else if (tokenSymbol === 'FWOG') {
+                    selectedToken = {
+                        address: 'A8C3xuqscfmyLrte3VmTqrAq8kgMASius9AFNANwpump',
+                        symbol: 'FWOG',
+                        image: tokenImage
+                    };
+                    document.querySelector('#geckoterminal-embed').src = 'https://www.geckoterminal.com/solana/pools/AB1eu2L1Jr3nfEft85AuD2zGksUbam1Kr8MR3uM2sjwt?embed=1&info=0&swaps=0&grayscale=0&light_chart=0';
+                } else if (tokenSymbol === 'LUCE') {
+                    selectedToken = {
+                        address: 'CBdCxKo9QavR9hfShgpEBG3zekorAeD7W1jfq2o3pump',
+                        symbol: 'LUCE',
+                        image: tokenImage
+                    };
+                    document.querySelector('#geckoterminal-embed').src = 'https://www.geckoterminal.com/solana/pools/HQWsAXxH3dGy9DQbryJyDrquKt2eDY6MMHWmpUEKfgZq?embed=1&info=0&swaps=0&grayscale=0&light_chart=0';
+                }
+                
+                const isLong = document.querySelector('.position-btn.long').classList.contains('active');
+                const actionButton = document.getElementById('trade-button');
+                actionButton.textContent = `${isLong ? 'Long' : 'Short'} ${tokenSymbol}`;
+                
+                fetchTokenPrice(selectedToken.address);
+            });
+        });
+
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        document.querySelector('.settings-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelector('.backdrop').style.display = 'block';
+            document.querySelector('.settings-popup').style.display = 'block';
+        });
+
+        document.querySelector('.close-settings').addEventListener('click', () => {
+            document.querySelector('.backdrop').style.display = 'none';
+            document.querySelector('.settings-popup').style.display = 'none';
+        });
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+            const popup = document.querySelector('.settings-popup');
+            const settingsBtn = document.querySelector('.settings-btn');
+            if (!popup.contains(e.target) && !settingsBtn.contains(e.target)) {
+                document.querySelector('.backdrop').style.display = 'none';
+                popup.style.display = 'none';
+            }
+        });
+
+        // Handle slippage buttons
+        document.querySelectorAll('.slippage-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.slippage-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const customInput = document.querySelector('.custom-slippage');
+                customInput.disabled = !btn.classList.contains('custom');
+                if (btn.classList.contains('custom')) {
+                    customInput.focus();
+                }
+            });
+        });
+
+        // Add event listener for save settings button
+        document.querySelector('.save-settings').addEventListener('click', () => {
+            // Get the selected slippage value
+            let slippage;
+            const activeSlippageBtn = document.querySelector('.slippage-btn.active');
+            if (activeSlippageBtn.classList.contains('custom')) {
+                slippage = document.querySelector('.custom-slippage').value;
+            } else {
+                slippage = activeSlippageBtn.textContent;
+            }
+
+            // Get the max priority fee value
+            const maxPriorityFee = document.querySelector('.fee-input input').value;
+
+            // Save the values (you can modify this to save to your preferred storage)
+            const settings = {
+                slippage: slippage,
+                maxPriorityFee: maxPriorityFee
+            };
+            
+            // You can store these values in localStorage if needed
+            localStorage.setItem('tradeSettings', JSON.stringify(settings));
+
+            // Close the settings popup
+            document.querySelector('.backdrop').style.display = 'none';
+            document.querySelector('.settings-popup').style.display = 'none';
+        });
+
+        document.querySelector('.connect-wallet').addEventListener('click', async () => {
+            try {
+                // Check if Phantom is installed
+                if (!window.phantom?.solana && !window.solana?.isPhantom) {
+                    alert('Please install Phantom wallet!');
+                    window.open('https://phantom.app/', '_blank');
+                    return;
+                }
+
+                // Get the provider
+                const provider = window.phantom?.solana || window.solana;
+
+                // Connect to Phantom
+                const response = await provider.connect();
+                const publicKey = response.publicKey.toString();
+                
+                // Update button text to show connected address
+                const shortenedAddress = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+                document.querySelector('.connect-wallet').textContent = shortenedAddress;
+                
+            } catch (error) {
+                console.error('Error connecting to Phantom:', error);
+                if (error.code === 4001) {
+                    // User rejected the connection
+                    alert('Please accept the connection request in Phantom');
+                } else {
+                    alert('Error connecting to Phantom wallet');
+                }
+            }
+        });
+
+        // Check if already connected on page load
+        window.addEventListener('load', async () => {
+            try {
+                const provider = window.phantom?.solana || window.solana;
+                if (provider?.isPhantom && provider.isConnected) {
+                    const publicKey = provider.publicKey.toString();
+                    const shortenedAddress = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+                    document.querySelector('.connect-wallet').textContent = shortenedAddress;
+                }
+            } catch (error) {
+                console.error('Error checking wallet connection:', error);
+            }
+        });
+    </script>
+</body>
+</html> 
